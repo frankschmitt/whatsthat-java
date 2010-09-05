@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-//import javax.swing.JLabel;
+import javax.swing.JLabel;
 //import javax.swing.JPanel;
 //import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -23,9 +23,6 @@ import javax.swing.JToolBar;
 
 
 
-/**
- * This class demonstrates how to load an Image from an external file
- */
 public class WhatsThat extends Component {
 
 	private static final long serialVersionUID = 1L;
@@ -35,11 +32,12 @@ public class WhatsThat extends Component {
 	final static Color red = Color.red;
 	final static Color white = Color.white;
 
-	static final int NumRows = 10;
-	static final int NumCols = 10;
+	static final int NumRows = 5;
+	static final int NumCols = 5;
 
 	BufferedImage img;
 	JButton button;
+	JLabel countsLabel;
 
 	private void paintRectangle(Graphics2D g2, double x, double y, double width, double height, Color col, boolean fill) {
 		if (fill) {	g2.setPaint(col);
@@ -65,8 +63,8 @@ public class WhatsThat extends Component {
 
 
 		// draw Rectangle2D.Double
-		double img_height = img.getHeight();
-		double img_width = img.getWidth();
+		double img_height = this.getHeight();
+		double img_width = this.getWidth();
 		double x = 0;
 		double y = 0;
 
@@ -93,23 +91,44 @@ public class WhatsThat extends Component {
 				paintRectangle(g2, x, y, tile_width, tile_height, col, fill);
 			}
 		}
+		// update counts label
+		countsLabel.setText("NumVisibleTiles: " + NumVisibleTiles);
 	}
 
+	private void nextImage() {
+		NumVisibleTiles = 0;
+	}
+	
 	public void buttonClicked(ActionEvent e) {
-		//button.setEnabled(!button.isEnabled());
+if (NumVisibleTiles == NumRows*NumCols) {
+			nextImage();
+		}
+//button.setEnabled(!button.isEnabled());
 		++NumVisibleTiles;
 		repaint();
+		
 	}
 
+	private void addBtnShowNextTile(JToolBar parent) {
+		// the "show next tile" button
+		button= new JButton("Show next tile");
+		//button.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { button.setEnabled(false);}});
+		button.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { buttonClicked(e); }});
+		parent.add(button);
+	}
+	
+	private void addLblCounts(JToolBar parent) {
+		countsLabel = new JLabel("NumVisibleTiles: " + NumVisibleTiles);
+		parent.add(countsLabel);
+	}
+	
 	private void initUI(JFrame f) {
 		//setSize(200,00);
 		//setLayout(new BorderLayout());
 
 		JToolBar toolbar = new JToolBar();
-		button= new JButton("Show next tile");
-		//button.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { button.setEnabled(false);}});
-		button.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { buttonClicked(e); }});
-		toolbar.add(button);
+		addBtnShowNextTile(toolbar);
+		addLblCounts(toolbar);
 		f.getContentPane().add(toolbar, BorderLayout.NORTH);
 	}
 
