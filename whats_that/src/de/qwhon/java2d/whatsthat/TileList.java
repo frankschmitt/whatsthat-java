@@ -1,13 +1,16 @@
 package de.qwhon.java2d.whatsthat;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 class TileList {
 
   ArrayList<Integer> VisibleTiles;
   ArrayList<Integer> InvisibleTiles;
+  Random random;
 
   public TileList(int NumTiles) {
+	  this.random = new Random();
 	  this.VisibleTiles = new ArrayList<Integer>();
 	  this.InvisibleTiles = new ArrayList<Integer>();
 	  for (int i=0; i< NumTiles; ++i) {
@@ -18,7 +21,7 @@ class TileList {
 
   public Boolean nextTile() {
 	  if (!InvisibleTiles.isEmpty()) {
-		  int index = 0;
+		  int index = random.nextInt(InvisibleTiles.size());
 	    VisibleTiles.add(InvisibleTiles.get(index));
 	    InvisibleTiles.remove(index);
 	    return true;
