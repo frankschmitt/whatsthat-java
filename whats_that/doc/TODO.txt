@@ -1,0 +1,4 @@
+- read directory contents and store them in array or similar
+- randomly choose next image 
+- randomly choose next tile
+- add "reveal" button 
