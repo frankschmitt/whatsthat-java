@@ -26,18 +26,19 @@ import javax.swing.JToolBar;
 public class WhatsThat extends Component {
 
 	private static final long serialVersionUID = 1L;
-	private int NumVisibleTiles = 0;
+	//private int NumVisibleTiles = 0;
 
 	final static Color black = Color.black;
 	final static Color red = Color.red;
 	final static Color white = Color.white;
 
-	static final int NumRows = 5;
-	static final int NumCols = 5;
+	static final int NumRows = 3;
+	static final int NumCols = 3;
 
 	BufferedImage img;
 	JButton button;
 	JLabel countsLabel;
+	TileList tileList;
 
 	private void paintRectangle(Graphics2D g2, double x, double y, double width, double height, Color col, boolean fill) {
 		if (fill) {	g2.setPaint(col);
@@ -78,7 +79,8 @@ public class WhatsThat extends Component {
 			for (int j=0; j<NumCols; ++j) {
 				// determine whether tile should be visible or not
 				//fill = (i > NumVisibleTiles);
-				fill = ((i+j*NumRows) > NumVisibleTiles);
+				//fill = ((i+j*NumRows) > NumVisibleTiles);
+				fill = !tileList.isTileVisible(i+j*NumRows);
 				y = tile_height*j;
 				if ((i%2 + j%2)%2 == 0) {
 					col = white;
@@ -92,24 +94,28 @@ public class WhatsThat extends Component {
 			}
 		}
 		// update counts label
-		countsLabel.setText("NumVisibleTiles: " + NumVisibleTiles);
+		countsLabel.setText("NumVisibleTiles: " + tileList.getNumVisibleTiles());
 	}
 
 	private void nextImage() {
-		NumVisibleTiles = 0;
+		tileList.reset();
 	}
 	
 	public void buttonClicked(ActionEvent e) {
-if (NumVisibleTiles == NumRows*NumCols) {
+/*if (NumVisibleTiles == NumRows*NumCols) {
 			nextImage();
 		}
 //button.setEnabled(!button.isEnabled());
 		++NumVisibleTiles;
 		repaint();
-		
+		*/
+		if (!tileList.nextTile()) {
+			nextImage();
+		}
+		repaint();	
 	}
 
-	private void addBtnShowNextTile(JToolBar parent) {
+	private void addBtnShowNextTile(JToolBar parent) throws Exception {
 		// the "show next tile" button
 		button= new JButton("Show next tile");
 		//button.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { button.setEnabled(false);}});
@@ -118,11 +124,11 @@ if (NumVisibleTiles == NumRows*NumCols) {
 	}
 	
 	private void addLblCounts(JToolBar parent) {
-		countsLabel = new JLabel("NumVisibleTiles: " + NumVisibleTiles);
+		countsLabel = new JLabel("NumVisibleTiles: " + tileList.getNumVisibleTiles());
 		parent.add(countsLabel);
 	}
 	
-	private void initUI(JFrame f) {
+	private void initUI(JFrame f) throws Exception {
 		//setSize(200,00);
 		//setLayout(new BorderLayout());
 
@@ -133,6 +139,7 @@ if (NumVisibleTiles == NumRows*NumCols) {
 	}
 
 	public WhatsThat() {
+		tileList = new TileList(NumRows*NumCols);
 		try {
 			img = ImageIO.read(new File("data/DSC00390.JPG"));
 			//img = ImageIO.read(new File("data/strawberry.jpg"));
@@ -150,7 +157,7 @@ if (NumVisibleTiles == NumRows*NumCols) {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 
 		JFrame f = new JFrame("Load Image Sample");
 
