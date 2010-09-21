@@ -4,11 +4,11 @@
 - add "reveal" button 
 - add localization support
 - show image title in title bar upon reveal
-- add online help
-- write documentation (QuickStart-Guide etc)
-- add config dialog for:
-	- NumRows
+* add config dialog for:
+	* NumRows (INCOMPLETE)
 	- NumCols
 	- Language
 	- data dir
+- add online help
+- write documentation (QuickStart-Guide etc)
 	
