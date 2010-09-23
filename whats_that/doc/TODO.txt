@@ -1,12 +1,12 @@
 + randomly choose next tile
 + read directory contents and store them in array or similar
 + randomly choose next image 
-- add "reveal" button 
-- add localization support
++ add "reveal" button 
+* add localization support
 - show image title in title bar upon reveal
 * add config dialog for:
-	* NumRows (INCOMPLETE)
-	- NumCols
+	+ NumRows 
+	+ NumCols
 	- Language
 	- data dir
 - add online help

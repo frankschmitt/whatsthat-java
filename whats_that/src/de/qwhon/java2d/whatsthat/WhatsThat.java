@@ -19,11 +19,28 @@ import java.util.Random;
 
 public class WhatsThat extends Component implements ActionListener, ChangeListener {
 
+	// strings for button captions etc.
+	// english
+	/* private static final String S_WHATS_THAT = "What's that?";
+	private static final String S_SHOW_NEXT_TILE = "Show next tile";
+	private static final String S_TILE = "Tile";
+	private static final String S_FILE = "File";
+	private static final String S_REVEAL = "Reveal";
+	private static final String S_QUIT = "Quit";
+	*/
+	// german
+	private static final String S_WHATS_THAT = "Was ist das?";
+	private static final String S_SHOW_NEXT_TILE = "NŠchste Kachel";
+	private static final String S_TILE = "Kachel";
+	private static final String S_FILE = "Datei";
+	private static final String S_REVEAL = "Bild zeigen";
+	private static final String S_QUIT = "Beenden";
+
 	public class ImageList {
 		private File directory;
 		private File[] imageFiles;
 		private Random random;
-		private int currentImageIndex;
+		private int currentImageIndex = -1;
 
 		public ImageList(String dirName) {
 			directory = new File(dirName);
@@ -32,7 +49,8 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		}
 
 		public String nextImageFile() {
-			currentImageIndex = random.nextInt(imageFiles.length);
+			//currentImageIndex = random.nextInt(imageFiles.length);
+			currentImageIndex = (currentImageIndex + 1) % imageFiles.length;
 			try {
 				return imageFiles[currentImageIndex].getCanonicalPath();
 			}
@@ -50,12 +68,6 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		}
 	}
 
-	private static final String S_WHATS_THAT = "What's that?";
-	// strings for button captions etc.
-	private static final String S_SHOW_NEXT_TILE = "Show next tile";
-	private static final String S_TILE = "Tile: ";
-	private static final String S_FILE = "File: ";
-
 	private static final long serialVersionUID = 1L;
 
 	final static Color black = Color.black;
@@ -66,7 +78,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private int NumCols = 4;
 
 	BufferedImage img;
-	JButton button;
+	JButton btnShowNextTile;
 	JLabel countsLabel;
 	JLabel filesLabel;
 	TileList tileList;
@@ -76,6 +88,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private JSpinner numRowsSpinner;
 	private SpinnerModel numRowsModel;
 	private SpinnerModel numColsModel;
+	private JButton btnReveal;
 
 	private void paintRectangle(Graphics2D g2, double x, double y,
 			double width, double height, Color col, boolean fill) {
@@ -136,8 +149,8 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 
 	private void updateLabels() {
 		// update labels
-		countsLabel.setText(S_TILE + tileList.getNumVisibleTiles() + "/" + tileList.getNumTiles());
-		filesLabel.setText(S_FILE + (imageList.getCurrentImageIndex()+1) + "/" + imageList.getNumImages());
+		countsLabel.setText(S_TILE + ": " + tileList.getNumVisibleTiles() + "/" + tileList.getNumTiles());
+		filesLabel.setText(S_FILE + ": " + (imageList.getCurrentImageIndex()+1) + "/" + imageList.getNumImages());
 	}
 
 	private void nextImage() {
@@ -145,24 +158,39 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		readNextImage();
 	}
 
-	public void buttonClicked(ActionEvent e) {
+	public void showNextTileClicked(ActionEvent e) {
 		if (!tileList.nextTile()) {
 			nextImage();
 		}
 		repaint();
 	}
 
-	private void addBtnShowNextTile(JToolBar parent) throws Exception {
-		// the "show next tile" button
-		button = new JButton(S_SHOW_NEXT_TILE);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				buttonClicked(e);
-			}
-		});
-		parent.add(button);
+	public void revealClicked(ActionEvent e) {
+		while (tileList.nextTile());
+		repaint();
 	}
 
+	private void addBtnShowNextTile(JToolBar parent) throws Exception {
+		// the "show next tile" button
+		btnShowNextTile = new JButton(S_SHOW_NEXT_TILE);
+		btnShowNextTile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showNextTileClicked(e);
+			}
+		});
+		parent.add(btnShowNextTile);
+	}
+	
+	private void addBtnReveal(JToolBar parent) throws Exception {
+		btnReveal = new JButton(S_REVEAL);
+		btnReveal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				revealClicked(e);
+			}
+		});
+		parent.add(btnReveal);
+	}
+	
 	private void addLblCounts(JToolBar parent) {
 		countsLabel = new JLabel(WhatsThat.S_TILE
 				+ tileList.getNumVisibleTiles());
@@ -179,6 +207,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		this.f = f;
 		JToolBar toolbar = new JToolBar();
 		addBtnShowNextTile(toolbar);
+		addBtnReveal(toolbar);
 		addLabels(toolbar);
 		f.getContentPane().add(toolbar, BorderLayout.NORTH);
 		createMenuBar();
@@ -232,26 +261,26 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 
 	private void createMenuBar() {
 		JMenuBar menuBar;
-		JMenu menu, submenu;
+		JMenu menu; //, submenu;
 		JMenuItem menuItem;
-		JRadioButtonMenuItem rbMenuItem;
-		JCheckBoxMenuItem cbMenuItem;
+		//JRadioButtonMenuItem rbMenuItem;
+		//JCheckBoxMenuItem cbMenuItem;
 
 		//Create the menu bar.
 		menuBar = new JMenuBar();
 
 		//Build the first menu.
-		menu = new JMenu("File");
+		menu = new JMenu(S_FILE);
 		menu.setMnemonic(KeyEvent.VK_F);
 		menu.getAccessibleContext().setAccessibleDescription(
 		"The only menu in this program that has menu items");
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItem = new JMenuItem("Quit",
+		menuItem = new JMenuItem(S_QUIT,
 				KeyEvent.VK_Q);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		//menuItem.setAccelerator(KeyStroke.getKeyStroke(
+		//		KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription(
 				"This doesn't really do anything");
 		menuItem.setActionCommand("quit");
