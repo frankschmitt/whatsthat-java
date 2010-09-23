@@ -40,11 +40,11 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 				return "";
 			}
 		}
-		
+
 		public int getNumImages() {
 			return imageFiles.length;
 		}
-		
+
 		public int getCurrentImageIndex() {
 			return currentImageIndex;
 		}
@@ -63,7 +63,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	final static Color white = Color.white;
 
 	private int NumRows = 3;
-	private int NumCols = 3;
+	private int NumCols = 4;
 
 	BufferedImage img;
 	JButton button;
@@ -72,6 +72,10 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	TileList tileList;
 	ImageList imageList;
 	JFrame f;
+	private JSpinner numColsSpinner;
+	private JSpinner numRowsSpinner;
+	private SpinnerModel numRowsModel;
+	private SpinnerModel numColsModel;
 
 	private void paintRectangle(Graphics2D g2, double x, double y,
 			double width, double height, Color col, boolean fill) {
@@ -102,11 +106,11 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		boolean fill;
 		Graphics2D g2 = (Graphics2D) g;
 		for (int i = 0; i < NumRows; ++i) {
-			x = tile_width * i;
+			y = tile_height * i;
 			for (int j = 0; j < NumCols; ++j) {
+				x = tile_width * j;
 				// determine whether tile should be visible or not
-				fill = !tileList.isTileVisible(i + j * NumRows);
-				y = tile_height * j;
+				fill = !tileList.isTileVisible(i + j*NumRows);
 				if ((i % 2 + j % 2) % 2 == 0) {
 					col = white;
 				} else {
@@ -118,13 +122,18 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		updateLabels();
 	}
 
-public void stateChanged(ChangeEvent e) {
-	SpinnerNumberModel source = (SpinnerNumberModel)(e.getSource());
-    this.NumRows = (Integer)source.getValue();
-    tileList.setNumTiles(NumRows*NumCols);
-    nextImage();
-}
-	
+	public void stateChanged(ChangeEvent e) {
+		SpinnerNumberModel source = (SpinnerNumberModel)(e.getSource());
+		if (source == numRowsModel) {
+			this.NumRows = (Integer)source.getValue();
+		}
+		else if (source == numColsModel) {
+			this.NumCols = (Integer)source.getValue();
+		}
+		tileList.setNumTiles(NumRows*NumCols);
+		nextImage();
+	}
+
 	private void updateLabels() {
 		// update labels
 		countsLabel.setText(S_TILE + tileList.getNumVisibleTiles() + "/" + tileList.getNumTiles());
@@ -177,16 +186,22 @@ public void stateChanged(ChangeEvent e) {
 	}
 
 	private void createSpinners(JToolBar toolbar) {
-		SpinnerModel numRowsModel =
-	        new SpinnerNumberModel(NumRows, //initial value
-	                               1, //min
-	                               10, //max
-	                               1);                //step	
-		JSpinner numRowsSpinner = new JSpinner(numRowsModel);
+		numRowsModel = new SpinnerNumberModel(NumRows, //initial value
+				1, //min
+				10, //max
+				1);
+		numRowsSpinner = new JSpinner(numRowsModel);
 		numRowsModel.addChangeListener(this);
-        toolbar.add(numRowsSpinner);
+		toolbar.add(numRowsSpinner);
+		numColsModel = new SpinnerNumberModel(NumCols, //initial value
+				1, //min
+				10, //max
+				1);
+		numColsSpinner = new JSpinner(numColsModel);
+		numColsModel.addChangeListener(this);
+		toolbar.add(numColsSpinner);
 	}
-	
+
 	private void addLabels(JToolBar toolbar) {
 		addLblCounts(toolbar);
 		addLblFiles(toolbar);
@@ -214,7 +229,7 @@ public void stateChanged(ChangeEvent e) {
 			return new Dimension(1024, 768);
 		}
 	}
-	
+
 	private void createMenuBar() {
 		JMenuBar menuBar;
 		JMenu menu, submenu;
@@ -229,16 +244,16 @@ public void stateChanged(ChangeEvent e) {
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		menu.getAccessibleContext().setAccessibleDescription(
-		        "The only menu in this program that has menu items");
+		"The only menu in this program that has menu items");
 		menuBar.add(menu);
 
 		//a group of JMenuItems
 		menuItem = new JMenuItem("Quit",
-		                         KeyEvent.VK_Q);
+				KeyEvent.VK_Q);
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_1, ActionEvent.ALT_MASK));
+				KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription(
-		        "This doesn't really do anything");
+				"This doesn't really do anything");
 		menuItem.setActionCommand("quit");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
@@ -295,18 +310,18 @@ public void stateChanged(ChangeEvent e) {
 		menu.setMnemonic(KeyEvent.VK_N);
 		menu.getAccessibleContext().setAccessibleDescription(
 		        "This menu does nothing");
-*/
+		 */
 		menuBar.add(menu);
 		f.setJMenuBar(menuBar);
 	}
-	
-	
+
+
 	public void actionPerformed(ActionEvent e) {
-	    if ("quit".equals(e.getActionCommand())) {
-	      exit();
-	    }
+		if ("quit".equals(e.getActionCommand())) {
+			exit();
+		}
 	}
-	
+
 	public void exit() {
 		WindowEvent windowClosing = new WindowEvent(f, WindowEvent.WINDOW_CLOSING);
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(windowClosing);

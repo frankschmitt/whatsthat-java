@@ -19,4 +19,22 @@ public class TileListTest {
 		tl.nextTile();
 		assertEquals("after calling nextTile: #visible = 1", true, tl.isTileVisible(0));
 	}
+	
+	@Test
+	public void testGetNumTilesAfterSetNumTiles() {
+		TileList tl = new TileList(1);
+		assertEquals("after construction: #tiles = 1", 1, tl.getNumTiles() );
+		tl.setNumTiles(2);
+		assertEquals("after calling setNumTiles: #tiles = 2", 2, tl.getNumTiles() );
+	}
+	
+	@Test
+	public void testNextTileAfterSetNumTiles() {
+		TileList tl = new TileList(1);
+		tl.setNumTiles(2);
+		assertEquals("first NextTile", true, tl.nextTile());
+		assertEquals("2nd NextTile", true, tl.nextTile());
+		assertEquals("3rd NextTile", false, tl.nextTile());
+	}
+
 }
