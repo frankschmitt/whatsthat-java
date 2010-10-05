@@ -4,11 +4,10 @@
 + add "reveal" button 
 * add localization support
 - show image title in title bar upon reveal
-* add config dialog for:
++ add config dialog for:
 	+ NumRows 
 	+ NumCols
-	- Language
-	- data dir
-- add online help
-- write documentation (QuickStart-Guide etc)
+- add button to show last image (last/Dodo.jpeg)	
 	
+Git message:	
+whatsthat: list of files is now randomized after each cycle

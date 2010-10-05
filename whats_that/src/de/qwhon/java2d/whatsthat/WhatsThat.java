@@ -15,7 +15,9 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import java.util.Random;
+//import java.util.Collections;
+//import java.util.Random;
+import java.util.*;
 
 public class WhatsThat extends Component implements ActionListener, ChangeListener {
 
@@ -38,21 +40,29 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 
 	public class ImageList {
 		private File directory;
-		private File[] imageFiles;
-		private Random random;
+		private java.util.List<File> imageFiles;
 		private int currentImageIndex = -1;
 
 		public ImageList(String dirName) {
 			directory = new File(dirName);
-			imageFiles = directory.listFiles();
-			random = new Random();
+			File[] tmp = directory.listFiles();
+			imageFiles = Arrays.asList(tmp); 
 		}
 
 		public String nextImageFile() {
 			//currentImageIndex = random.nextInt(imageFiles.length);
-			currentImageIndex = (currentImageIndex + 1) % imageFiles.length;
+			// last image? randomize the list + start new
+			if (currentImageIndex == imageFiles.size()-1)
+			{
+				Collections.shuffle(imageFiles);
+				currentImageIndex = 0;
+			}
+				else {
+				currentImageIndex = currentImageIndex+1;
+		}
+			
 			try {
-				return imageFiles[currentImageIndex].getCanonicalPath();
+				return imageFiles.get(currentImageIndex).getCanonicalPath();
 			}
 			catch(IOException e) {
 				return "";
@@ -60,7 +70,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		}
 
 		public int getNumImages() {
-			return imageFiles.length;
+			return imageFiles.size();
 		}
 
 		public int getCurrentImageIndex() {
