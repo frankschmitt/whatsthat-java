@@ -41,12 +41,21 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	public class ImageList {
 		private File directory;
 		private java.util.List<File> imageFiles;
+		//private java.util.List<String> imageFiles;
 		private int currentImageIndex = -1;
 
 		public ImageList(String dirName) {
 			directory = new File(dirName);
 			File[] tmp = directory.listFiles();
+			
 			imageFiles = Arrays.asList(tmp); 
+			//imageFiles = Arrays.asList(new File[0]); 
+			//imageFiles = new java.util.List<String>();
+			//for (int i=0; i<tmp.length; ++i) {
+			//	if(!tmp[i].isHidden()) {
+			//		imageFiles.add(tmp[i]);
+			//	}
+			//}
 		}
 
 		public String nextImageFile() {
@@ -63,7 +72,8 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 			
 			try {
 				return imageFiles.get(currentImageIndex).getCanonicalPath();
-			}
+				//return imageFiles.get(currentImageIndex);
+				}
 			catch(IOException e) {
 				return "";
 			}
