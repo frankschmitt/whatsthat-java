@@ -8,6 +8,6 @@
 	+ NumRows 
 	+ NumCols
 - add button to show last image (last/Dodo.jpeg)	
-- ignore hidden files when building image list (e.g. .DS_Store => causes exception on startup)	
++ ignore hidden files when building image list (e.g. .DS_Store => causes exception on startup)	
 	
 Git message:	

@@ -36,26 +36,25 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private static final String S_TILE = "Kachel";
 	private static final String S_FILE = "Datei";
 	private static final String S_REVEAL = "Bild zeigen";
+	private static final String S_LAST_IMAGE = "Letztes Bild";
 	private static final String S_QUIT = "Beenden";
-
+	
 	public class ImageList {
 		private File directory;
 		private java.util.List<File> imageFiles;
-		//private java.util.List<String> imageFiles;
 		private int currentImageIndex = -1;
-
+	
 		public ImageList(String dirName) {
 			directory = new File(dirName);
 			File[] tmp = directory.listFiles();
 			
-			imageFiles = Arrays.asList(tmp); 
-			//imageFiles = Arrays.asList(new File[0]); 
-			//imageFiles = new java.util.List<String>();
-			//for (int i=0; i<tmp.length; ++i) {
-			//	if(!tmp[i].isHidden()) {
-			//		imageFiles.add(tmp[i]);
-			//	}
-			//}
+			// omit hidden files (e.g. .DS_Store)
+			imageFiles = new java.util.ArrayList<File>(); 			
+			for (int i=0; i<tmp.length; ++i) {
+				if(!tmp[i].isHidden()) {
+					imageFiles.add(tmp[i]);
+				}
+			}
 		}
 
 		public String nextImageFile() {
@@ -72,7 +71,6 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 			
 			try {
 				return imageFiles.get(currentImageIndex).getCanonicalPath();
-				//return imageFiles.get(currentImageIndex);
 				}
 			catch(IOException e) {
 				return "";
@@ -97,18 +95,20 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private int NumRows = 3;
 	private int NumCols = 4;
 
-	BufferedImage img;
-	JButton btnShowNextTile;
-	JLabel countsLabel;
-	JLabel filesLabel;
-	TileList tileList;
-	ImageList imageList;
-	JFrame f;
+	private BufferedImage img;
+	private JButton btnShowNextTile;
+	private JLabel countsLabel;
+	private JLabel filesLabel;
+	private TileList tileList;
+	private ImageList imageList;
+	private JFrame f;
 	private JSpinner numColsSpinner;
 	private JSpinner numRowsSpinner;
 	private SpinnerModel numRowsModel;
 	private SpinnerModel numColsModel;
 	private JButton btnReveal;
+	private JButton btnLastImage;
+	private boolean isLastImage;
 
 	private void paintRectangle(Graphics2D g2, double x, double y,
 			double width, double height, Color col, boolean fill) {
@@ -190,6 +190,13 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		repaint();
 	}
 
+	public void lastImageClicked(ActionEvent e) {
+	  isLastImage = true;
+	  nextImage();
+	  tileList.nextTile();
+	  repaint();
+	}
+
 	private void addBtnShowNextTile(JToolBar parent) throws Exception {
 		// the "show next tile" button
 		btnShowNextTile = new JButton(S_SHOW_NEXT_TILE);
@@ -211,6 +218,17 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		parent.add(btnReveal);
 	}
 	
+	private void addBtnLastImage(JToolBar parent) throws Exception {
+		btnLastImage = new JButton(S_LAST_IMAGE);
+		btnLastImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lastImageClicked(e);
+			}
+		});
+		parent.add(btnLastImage);
+	}
+	
+	
 	private void addLblCounts(JToolBar parent) {
 		countsLabel = new JLabel(WhatsThat.S_TILE
 				+ tileList.getNumVisibleTiles());
@@ -226,12 +244,17 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private void initUI(JFrame f) throws Exception {
 		this.f = f;
 		JToolBar toolbar = new JToolBar();
-		addBtnShowNextTile(toolbar);
-		addBtnReveal(toolbar);
+		addButtons(toolbar);
 		addLabels(toolbar);
 		f.getContentPane().add(toolbar, BorderLayout.NORTH);
 		createMenuBar();
 		createSpinners(toolbar);
+	}
+
+	private void addButtons(JToolBar toolbar) throws Exception {
+		addBtnShowNextTile(toolbar);
+		addBtnReveal(toolbar);
+		addBtnLastImage(toolbar);
 	}
 
 	private void createSpinners(JToolBar toolbar) {
@@ -263,11 +286,20 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	}
 
 	private void readNextImage() {
+		String fileName = "";
 		try {
 			//img = ImageIO.read(new File("data/DSC00390.JPG"));
-			img = ImageIO.read(new File(imageList.nextImageFile()));
+			if (!isLastImage) {
+			  fileName = imageList.nextImageFile();
+			}
+			else {
+				fileName = "data/.last.jpg";
+			}
+			img = ImageIO.read(new File(fileName));
+			
 			// img = ImageIO.read(new File("data/strawberry.jpg"));
 		} catch (IOException e) {
+			countsLabel.setText(e.getMessage() + fileName);
 		}
 	}
 
