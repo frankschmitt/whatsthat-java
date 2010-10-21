@@ -39,6 +39,10 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	private static final String S_LAST_IMAGE = "Letztes Bild";
 	private static final String S_QUIT = "Beenden";
 	
+	public void debug(String s) {
+		System.out.println(s);
+	}
+	
 	public class ImageList {
 		private File directory;
 		private java.util.List<File> imageFiles;
@@ -51,10 +55,11 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 			// omit hidden files (e.g. .DS_Store)
 			imageFiles = new java.util.ArrayList<File>(); 			
 			for (int i=0; i<tmp.length; ++i) {
-				if(!tmp[i].isHidden()) {
+				if(!tmp[i].isHidden() && tmp[i].getName().endsWith(".jpg")) {
 					imageFiles.add(tmp[i]);
 				}
 			}
+			Collections.shuffle(imageFiles);
 		}
 
 		public String nextImageFile() {
@@ -70,7 +75,9 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 		}
 			
 			try {
-				return imageFiles.get(currentImageIndex).getCanonicalPath();
+				String nextFilename = imageFiles.get(currentImageIndex).getCanonicalPath();
+				debug(nextFilename);
+				return nextFilename;
 				}
 			catch(IOException e) {
 				return "";
