@@ -32,7 +32,7 @@ public class WhatsThat extends Component implements ActionListener, ChangeListen
 	 */
 	// german
 	private static final String S_WHATS_THAT = "Was ist das?";
-	private static final String S_SHOW_NEXT_TILE = "NŠchste Kachel";
+	private static final String S_SHOW_NEXT_TILE = "Naechste Kachel";
 	private static final String S_TILE = "Kachel";
 	private static final String S_FILE = "Datei";
 	private static final String S_REVEAL = "Bild zeigen";
