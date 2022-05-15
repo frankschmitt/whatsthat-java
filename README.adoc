@@ -1,0 +1,14 @@
+= SYNOPSIS
+A simple guessing game for kids, where the instructor reveals parts of an image, and the
+players (typically kids) try to guess the animal in the image.
+
+= PREREQUISITES
+* a recent JRE (I'm using JDK 14 right now)
+
+= BUILDING & RUNNING
+```
+cd whats_that
+./compile.bat
+./start.bat
+```
+(I'm currently in the process of switching to gradle, but that's still work in progress)
